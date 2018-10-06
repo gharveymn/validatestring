@@ -2,4 +2,4 @@
 validatestring C++ implementation for GNU Octave
 
 # LICENSE
-GPL for Octave
+GPLv3 for Octave
