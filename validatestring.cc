@@ -24,7 +24,7 @@ along with Octave; see the file COPYING.  If not, see
 #include <octave/oct-string.h>
 
 DEFUN_DLD (validatestring, args, nargout, 
-" -*- texinfo -*-\n\
+"-*- texinfo -*-\n\
 @deftypefn  {} {@var{validstr} =} validatestring (@var{str}, @var{strarray})\n\
 @deftypefnx {} {@var{validstr} =} validatestring (@var{str}, @var{strarray}, @var{funcname})\n\
 @deftypefnx {} {@var{validstr} =} validatestring (@var{str}, @var{strarray}, @var{funcname}, @var{varname})\n\
@@ -109,6 +109,11 @@ validatestring (\"b\", @{\"red\", \"green\", \"blue\", \"black\"@})\n\
     }
   }
   
+  if (nstr > 2)
+  {
+    error (("validatestring: invalid number of character inputs (" + std::to_string(nstr) + ")").c_str ());
+  }
+  
   if (nargin > 2 && args(nargin - 1).isnumeric ())
   {
     position = (args(nargin - 1).fix ()).idx_type_value ();
@@ -149,22 +154,22 @@ validatestring (\"b\", @{\"red\", \"green\", \"blue\", \"black\"@})\n\
   if (! ov_funcname.isempty ())
   {
     funcname = ov_funcname.string_value ();
-    errstr   = funcname + std::string(": ");
+    errstr   = funcname + ": ";
   }
   
   if (! ov_varname.isempty ())
   {
     varname =  ov_varname.string_value ();
-    errstr  += varname + std::string(" ");
+    errstr  += varname + " ";
   }
   else
   {
-    errstr += std::string("'") + str + std::string("' ");
+    errstr += "'" + str + "' ";
   }
   
   if (position > 0)
   {
-    errstr += std::string("(argument #") + std::to_string(position) + std::string(") ");
+    errstr += "(argument #" + std::to_string(position) + ") ";
   }
   
   num_strs = strarray.numel ();
@@ -181,12 +186,12 @@ validatestring (\"b\", @{\"red\", \"green\", \"blue\", \"black\"@})\n\
   
   if (nmatches == 0)
   {
-    non_match_str = std::string(strarray(0));
+    non_match_str = strarray(0);
     for (i = 1; i < num_strs; i++)
     {
       non_match_str += ", " + strarray(i);
     }
-    error ((std::string("validatestring: ") + errstr + std::string("does not match any of\n") + non_match_str).c_str ());
+    error (("validatestring: " + errstr + "does not match any of\n" + non_match_str).c_str ());
   }
   else if (nmatches == 1)
   {
@@ -210,12 +215,12 @@ validatestring (\"b\", @{\"red\", \"green\", \"blue\", \"black\"@})\n\
     {
       if (i != min_len_idx && ! octave::string::strncmpi (strarray(matches(min_len_idx)), strarray(matches(i)), min_len))
       {
-        non_match_str = std::string(strarray(matches(0)));
+        non_match_str = strarray(matches(0));
         for (i = 1; i < nmatches; i++)
         {
           non_match_str += ", " + strarray(matches(i));
         }
-        error ((std::string("validatestring: ") + errstr + std::string("allows multiple unique matches:\n") + non_match_str).c_str ());
+        error (("validatestring: " + errstr + "allows multiple unique matches:\n" + non_match_str).c_str ());
       }
     }
     return octave_value (strarray(matches(min_len_idx)));
