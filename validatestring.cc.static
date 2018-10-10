@@ -1,4 +1,4 @@
-/*
+ /*
 
 Copyright (C) 2018-2018 Gene Harvey
 
@@ -20,48 +20,57 @@ along with Octave; see the file COPYING.  If not, see
 
 */
 
-#include <octave/oct-string.h>
-#include <octave/oct.h>
+#if defined (HAVE_CONFIG_H)
+#  include "config.h"
+#endif
 
-DEFUN_DLD (validatestring, args, nargout, "-*- texinfo -*-\n\
-@deftypefn  {} {@var{validstr} =} validatestring (@var{str}, @var{strarray})\n\
-@deftypefnx {} {@var{validstr} =} validatestring (@var{str}, @var{strarray}, @var{funcname})\n\
-@deftypefnx {} {@var{validstr} =} validatestring (@var{str}, @var{strarray}, @var{funcname}, @var{varname})\n\
-@deftypefnx {} {@var{validstr} =} validatestring (@dots{}, @var{position})\n\
-Verify that @var{str} is an element, or substring of an element, in\n\
-@var{strarray}.\n\
-\n\
-When @var{str} is a character string to be tested, and @var{strarray} is a\n\
-cellstr of valid values, then @var{validstr} will be the validated form\n\
-of @var{str} where validation is defined as @var{str} being a member\n\
-or substring of @var{validstr}.  This is useful for both verifying\n\
-and expanding short options, such as @qcode{\"r\"}, to their longer forms,\n\
-such as @qcode{\"red\"}.  If @var{str} is a substring of @var{validstr}, and\n\
-there are multiple matches, the shortest match will be returned if all\n\
-matches are substrings of each other.  Otherwise, an error will be raised\n\
-because the expansion of @var{str} is ambiguous.  All comparisons are case\n\
-insensitive.\n\
-\n\
-The additional inputs @var{funcname}, @var{varname}, and @var{position}\n\
-are optional and will make any generated validation error message more\n\
-specific.\n\
-\n\
-Examples:\n\
-@c Set example in small font to prevent overfull line\n\
-\n\
-@smallexample\n\
-@group\n\
-validatestring (\"r\", @{\"red\", \"green\", \"blue\"@})\n\
-@result{} \"red\"\n\
-\n\
-validatestring (\"b\", @{\"red\", \"green\", \"blue\", \"black\"@})\n\
-@result{} error: validatestring: multiple unique matches were found for 'b':\n\
-   blue, black\n\
-@end group\n\
-@end smallexample\n\
-\n\
-@seealso{strcmp, strcmpi, validateattributes, inputParser}\n\
-@end deftypefn ")
+#include "octave-config.h"
+
+#include "oct-string.h"
+
+#include "ovl.h"
+#include "defun.h"
+
+DEFUN (validatestring, args, ,
+       doc: /* -*- texinfo -*-
+@deftypefn  {} {@var{validstr} =} validatestring (@var{str}, @var{strarray})
+@deftypefnx {} {@var{validstr} =} validatestring (@var{str}, @var{strarray}, @var{funcname})
+@deftypefnx {} {@var{validstr} =} validatestring (@var{str}, @var{strarray}, @var{funcname}, @var{varname})
+@deftypefnx {} {@var{validstr} =} validatestring (@dots{}, @var{position})
+Verify that @var{str} is an element, or substring of an element, in
+@var{strarray}.
+
+When @var{str} is a character string to be tested, and @var{strarray} is a
+cellstr of valid values, then @var{validstr} will be the validated form
+of @var{str} where validation is defined as @var{str} being a member
+or substring of @var{validstr}.  This is useful for both verifying
+and expanding short options, such as @qcode{\"r\"}, to their longer forms,
+such as @qcode{\"red\"}.  If @var{str} is a substring of @var{validstr}, and
+there are multiple matches, the shortest match will be returned if all
+matches are substrings of each other.  Otherwise, an error will be raised
+because the expansion of @var{str} is ambiguous.  All comparisons are case
+insensitive.
+
+The additional inputs @var{funcname}, @var{varname}, and @var{position}
+are optional and will make any generated validation error message more
+specific.
+
+Examples:
+@c Set example in small font to prevent overfull line
+
+@smallexample
+@group
+validatestring (\"r\", @{\"red\", \"green\", \"blue\"@})
+@result{} \"red\"
+
+validatestring (\"b\", @{\"red\", \"green\", \"blue\", \"black\"@})
+@result{} error: validatestring: multiple unique matches were found for 'b':
+blue, black
+@end group
+@end smallexample
+
+@seealso{strcmp, strcmpi, validateattributes, inputParser}
+@end deftypefn */)
 {
   octave_idx_type    i;
   std::string        errstr;
